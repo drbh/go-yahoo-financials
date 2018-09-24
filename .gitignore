@@ -1,1 +1,4 @@
 dep/
+data/*
+*.db
+app

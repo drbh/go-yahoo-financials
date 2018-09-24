@@ -1,5 +1,9 @@
 package main
 
+import (
+	"strconv"
+)
+
 // BALANCE
 
 type BalanceSheetHistory struct {
@@ -36,4 +40,58 @@ type BalanceStatement struct {
 	LongTermDebt            CellValue `json:"longTermDebt"`
 	Inventory               CellValue `json:"inventory"`
 	AccountsPayable         CellValue `json:"accountsPayable"`
+}
+
+func (bs *BalanceStatement) cols() string {
+	return "TotalLiab" + "," +
+		"TotalStockholderEquity" + "," +
+		"OtherCurrentLiab" + "," +
+		"TotalAssets" + "," +
+		"EndDate" + "," +
+		"CommonStock" + "," +
+		"OtherCurrentAssets" + "," +
+		"RetainedEarnings" + "," +
+		"OtherLiab" + "," +
+		"TreasuryStock" + "," +
+		"OtherAssets" + "," +
+		"Cash" + "," +
+		"TotalCurrentLiabilities" + "," +
+		"ShortLongTermDebt" + "," +
+		"OtherStockholderEquity" + "," +
+		"PropertyPlantEquipment" + "," +
+		"TotalCurrentAssets" + "," +
+		"LongTermInvestments" + "," +
+		"NetTangibleAssets" + "," +
+		"ShortTermInvestments" + "," +
+		"NetReceivables" + "," +
+		"LongTermDebt" + "," +
+		"Inventory" + "," +
+		"AccountsPayable"
+}
+
+func (bs *BalanceStatement) toCSV() string {
+	return strconv.Itoa(bs.TotalLiab.Raw) + "," +
+		strconv.Itoa(bs.TotalStockholderEquity.Raw) + "," +
+		strconv.Itoa(bs.OtherCurrentLiab.Raw) + "," +
+		strconv.Itoa(bs.TotalAssets.Raw) + "," +
+		strconv.Itoa(bs.EndDate.Raw) + "," +
+		strconv.Itoa(bs.CommonStock.Raw) + "," +
+		strconv.Itoa(bs.OtherCurrentAssets.Raw) + "," +
+		strconv.Itoa(bs.RetainedEarnings.Raw) + "," +
+		strconv.Itoa(bs.OtherLiab.Raw) + "," +
+		strconv.Itoa(bs.TreasuryStock.Raw) + "," +
+		strconv.Itoa(bs.OtherAssets.Raw) + "," +
+		strconv.Itoa(bs.Cash.Raw) + "," +
+		strconv.Itoa(bs.TotalCurrentLiabilities.Raw) + "," +
+		strconv.Itoa(bs.ShortLongTermDebt.Raw) + "," +
+		strconv.Itoa(bs.OtherStockholderEquity.Raw) + "," +
+		strconv.Itoa(bs.PropertyPlantEquipment.Raw) + "," +
+		strconv.Itoa(bs.TotalCurrentAssets.Raw) + "," +
+		strconv.Itoa(bs.LongTermInvestments.Raw) + "," +
+		strconv.Itoa(bs.NetTangibleAssets.Raw) + "," +
+		strconv.Itoa(bs.ShortTermInvestments.Raw) + "," +
+		strconv.Itoa(bs.NetReceivables.Raw) + "," +
+		strconv.Itoa(bs.LongTermDebt.Raw) + "," +
+		strconv.Itoa(bs.Inventory.Raw) + "," +
+		strconv.Itoa(bs.AccountsPayable.Raw)
 }

@@ -14,15 +14,17 @@ var client BoltClient
 var letters = []rune("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
 var integers = []rune("123456789")
 var database = []byte("values")
+var ratioDatabase = []byte("ratios")
+var targetDatabase = []byte("targets")
 
 type BoltClient struct {
 	boltDB *bolt.DB
 }
 
-func (bc *BoltClient) OpenBoltDb() {
+func (bc *BoltClient) OpenBoltDb(path string) {
 	var err error
 
-	bc.boltDB, err = bolt.Open("/Users/davidholtz/Desktop/pat-algo/bolt.db", 0600, nil)
+	bc.boltDB, err = bolt.Open(path, 0600, nil)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -51,10 +53,43 @@ func randSeq(n int) string {
 func Read(keyString string) string {
 	var result string
 	key := []byte(keyString)
+
 	client.boltDB.View(func(tx *bolt.Tx) error {
 		bucket := tx.Bucket(database)
 		if bucket == nil {
 			return fmt.Errorf("Bucket %q not found!", database)
+		}
+		val := bucket.Get(key)
+		result = string(val)
+		return nil
+	})
+
+	return result
+}
+
+func ReadRatios(keyString string) string {
+	var result string
+	key := []byte(keyString)
+
+	client.boltDB.View(func(tx *bolt.Tx) error {
+		bucket := tx.Bucket(ratioDatabase)
+		if bucket == nil {
+			return fmt.Errorf("Bucket %q not found!", ratioDatabase)
+		}
+		val := bucket.Get(key)
+		result = string(val)
+		return nil
+	})
+	return result
+}
+func ReadTargets(keyString string) string {
+	var result string
+	key := []byte(keyString)
+
+	client.boltDB.View(func(tx *bolt.Tx) error {
+		bucket := tx.Bucket(ratioDatabase)
+		if bucket == nil {
+			return fmt.Errorf("Bucket %q not found!", targetDatabase)
 		}
 		val := bucket.Get(key)
 		result = string(val)
@@ -68,6 +103,40 @@ func Write(stringkey string, jsonData []byte) []byte {
 	value := jsonData
 	client.boltDB.Update(func(tx *bolt.Tx) error {
 		bucket, err := tx.CreateBucketIfNotExists(database)
+		if err != nil {
+			return err
+		}
+		bucket.Put(key, value)
+		if err != nil {
+			return err
+		}
+		return nil
+	})
+	return key
+}
+
+func WriteRatios(stringkey string, jsonData []byte) []byte {
+	key := []byte(stringkey)
+	value := jsonData
+	client.boltDB.Update(func(tx *bolt.Tx) error {
+		bucket, err := tx.CreateBucketIfNotExists(ratioDatabase)
+		if err != nil {
+			return err
+		}
+		bucket.Put(key, value)
+		if err != nil {
+			return err
+		}
+		return nil
+	})
+	return key
+}
+
+func WriteTargets(stringkey string, jsonData []byte) []byte {
+	key := []byte(stringkey)
+	value := jsonData
+	client.boltDB.Update(func(tx *bolt.Tx) error {
+		bucket, err := tx.CreateBucketIfNotExists(targetDatabase)
 		if err != nil {
 			return err
 		}
