@@ -31,7 +31,7 @@ type SectorTargets struct {
 }
 
 func Medians() {
-	csvFile, _ := os.Open("cleaned_stocks.csv")
+	csvFile, _ := os.Open(myLocation + "/cleaned_stocks.csv")
 	reader := csv.NewReader(bufio.NewReader(csvFile))
 
 	var companies []Company

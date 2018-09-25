@@ -128,7 +128,7 @@ func fetchLocalorYahoo(sym string) string {
 }
 func GetFinancials(sym string) {
 	rss := fetchLocalorYahoo(sym)
-	fmt.Println(len(rss))
+	// fmt.Println(len(rss))
 
 	if len(rss) == 0 {
 	} else {

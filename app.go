@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"encoding/csv"
+	_ "github.com/andlabs/ui/winmanifest"
 	// "encoding/json"
 	"fmt"
 	"io"
@@ -13,8 +14,11 @@ import (
 	// "net/http"
 	"os"
 	"path/filepath"
+	"strconv"
 	// "reflect"
 )
+
+var companies []Company
 
 func main() {
 
@@ -34,10 +38,15 @@ func main() {
 		os.Mkdir(myDataDir, mode)
 	}
 
-	csvFile, _ := os.Open("cleaned_stocks.csv")
+	myDataDir = dir + "/evals"
+
+	if _, err = os.Stat(myDataDir); os.IsNotExist(err) {
+		os.Mkdir(myDataDir, mode)
+	}
+
+	csvFile, _ := os.Open(myLocation + "/cleaned_stocks.csv")
 	reader := csv.NewReader(bufio.NewReader(csvFile))
 
-	var companies []Company
 	for {
 		line, error := reader.Read()
 		if error == io.EOF {
@@ -56,18 +65,10 @@ func main() {
 	fmt.Println(databasePath)
 	client.OpenBoltDb(databasePath)
 
-	// for i := 1; i < len(companies); i++ {
-	// 	comp := companies[i]
-	// 	fmt.Println("\n")
-	// 	fmt.Println(i, comp.Symbol)
-	// 	GetFinancials(comp.Symbol)
-	// }
-
 	// sym := "AAPL"
 	// fmt.Println(sym)
 
-	Medians()
-	Check()
+	// GetTechnicalQuote("SRPT")
 
 	ui.Main(func() {
 		window = ui.NewWindow("go yahoo financial", 260, 100, true)
@@ -99,30 +100,76 @@ func makeBasicControlsPage() ui.Control {
 	hbox := ui.NewHorizontalBox()
 	hbox.SetPadded(true)
 
-	button1 := ui.NewButton("Button")
+	// button1 := ui.NewButton("Button")
+	button2 := ui.NewButton("Statements")
+	button3 := ui.NewButton("Technical")
+	button4 := ui.NewButton("Evaluate")
 
 	// hbox.Append(ui.NewCheckbox("Checkbox"), false)
 
-	entry1 := ui.NewEntry()
-	entry1.SetReadOnly(false)
-	entry1.SetText("GOOG")
-	hbox.Append(entry1, false)
+	// entry1 := ui.NewEntry()
+	// entry1.SetReadOnly(false)
+	// entry1.SetText("GOOG")
+	// hbox.Append(entry1, false)
 
-	hbox.Append(button1, false)
+	// hbox.Append(button1, false)
+	hbox.Append(button2, false)
+	hbox.Append(button3, false)
+	hbox.Append(button4, false)
 
 	vbox.Append(ui.NewLabel("Welcome to go-yahoo-financials\nDownload Balance, Income and Cashflow statements"), false)
 	vbox.Append(ui.NewHorizontalSeparator(), false)
 	vbox.Append(hbox, false)
 
-	button1.OnClicked(func(b *ui.Button) {
-		sym := entry1.Text()
+	fmt.Println(GetKeys("values"))
+	fmt.Println(strconv.Itoa(GetKeys("values")))
+	// if GetKeys("values") != nil {
+	numValues := strconv.Itoa(GetKeys("values"))
+	numRatios := strconv.Itoa(GetKeys("ratios"))
+	numTargets := strconv.Itoa(GetKeys("targets"))
+	numTechnical := strconv.Itoa(GetKeys("technical"))
 
-		// for i := 0; i < 1000; i++ {
-		GetFinancials(sym)
-		// fmt.Println(i)
-		// }
+	// fmt.Printf("key=%s, value=%s\n", k, v)
+	responsestr := fmt.Sprintf("Raw=%s\t\tStatements=%s\nSectors=%s\t\tTechnical=%s", numValues, numRatios, numTargets, numTechnical)
 
-		entry1.SetText("")
+	vbox.Append(ui.NewLabel(responsestr), false)
+	// }
+
+	// button1.OnClicked(func(b *ui.Button) {
+	// 	sym := entry1.Text()
+
+	// 	// for i := 0; i < 1000; i++ {
+	// 	GetFinancials(sym)
+	// 	// fmt.Println(i)
+	// 	// }
+
+	// 	entry1.SetText("")
+	// })
+	button2.OnClicked(func(b *ui.Button) {
+
+		for i := 1; i < len(companies); i++ {
+			comp := companies[i]
+			fmt.Println("\n")
+			fmt.Println(i, comp.Symbol)
+			GetFinancials(comp.Symbol)
+			// entry1.SetText(comp.Symbol)
+		}
+	})
+	button3.OnClicked(func(b *ui.Button) {
+
+		for i := 1; i < len(companies); i++ {
+			comp := companies[i]
+			fmt.Println("\n")
+			fmt.Println(i, comp.Symbol)
+			GetTechnicalQuote(comp.Symbol)
+			// entry1.SetText(comp.Symbol)
+		}
+	})
+	button4.OnClicked(func(b *ui.Button) {
+
+		Medians()
+		Check()
+
 	})
 
 	return vbox

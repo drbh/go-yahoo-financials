@@ -1,4 +1,5 @@
 dep/
 data/*
+evals/*
 *.db
 app
