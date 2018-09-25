@@ -1,0 +1,1 @@
+CGO_ENABLED=1 GOOS=windows CC=x86_64-w64-mingw32-gcc CXX=x86_64-w64-mingw32-g++ go build -o algo_windows.exe -ldflags "-H=windowsgui -extldflags=-s" *.go
