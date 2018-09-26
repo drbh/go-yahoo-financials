@@ -2,14 +2,15 @@ package main
 
 import (
 	"bufio"
-	"encoding/csv"
+	"strings"
+	// "encoding/csv"
 	"encoding/json"
 	"fmt"
 	// "github.com/davecgh/go-spew/spew"
 	"github.com/montanaflynn/stats"
-	"io"
-	"log"
-	"os"
+	// "io"
+	// "log"
+	// "os"
 )
 
 type Sector struct {
@@ -31,21 +32,37 @@ type SectorTargets struct {
 }
 
 func Medians() {
-	csvFile, _ := os.Open(myLocation + "/cleaned_stocks.csv")
-	reader := csv.NewReader(bufio.NewReader(csvFile))
+	// csvFile, _ := os.Open(myLocation + "/cleaned_stocks.csv")
+	// reader := csv.NewReader(bufio.NewReader(csvFile))
 
+	// var companies []Company
+	// for {
+	// 	line, error := reader.Read()
+	// 	if error == io.EOF {
+	// 		break
+	// 	} else if error != nil {
+	// 		log.Fatal(error)
+	// 	}
+	// 	companies = append(companies, Company{
+	// 		Symbol:    line[0],
+	// 		Sector:    line[1],
+	// 		SubSector: line[2],
+	// 	})
+	// }
+
+	data, err := Asset("cleaned_stocks.csv")
+	if err != nil {
+		// Asset was not found.
+	}
 	var companies []Company
-	for {
-		line, error := reader.Read()
-		if error == io.EOF {
-			break
-		} else if error != nil {
-			log.Fatal(error)
-		}
+	scanner := bufio.NewScanner(strings.NewReader(string(data)))
+	for scanner.Scan() {
+		line := strings.Split(scanner.Text(), ",")
+		// fmt.Println(line)
 		companies = append(companies, Company{
-			Symbol:    line[0],
-			Sector:    line[1],
-			SubSector: line[2],
+			Symbol:    string(line[0]),
+			Sector:    string(line[1]),
+			SubSector: string(line[2]),
 		})
 	}
 

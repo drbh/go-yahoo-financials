@@ -17,6 +17,7 @@ var database = []byte("values")
 var ratioDatabase = []byte("ratios")
 var targetDatabase = []byte("targets")
 var technicalDatabase = []byte("technical")
+var ohlcDatabase = []byte("ohlc")
 
 type BoltClient struct {
 	boltDB *bolt.DB
@@ -59,6 +60,23 @@ func Read(keyString string) string {
 		bucket := tx.Bucket(database)
 		if bucket == nil {
 			return fmt.Errorf("Bucket %q not found!", database)
+		}
+		val := bucket.Get(key)
+		result = string(val)
+		return nil
+	})
+
+	return result
+}
+
+func ReadOHLC(keyString string) string {
+	var result string
+	key := []byte(keyString)
+
+	client.boltDB.View(func(tx *bolt.Tx) error {
+		bucket := tx.Bucket(ohlcDatabase)
+		if bucket == nil {
+			return fmt.Errorf("Bucket %q not found!", ohlcDatabase)
 		}
 		val := bucket.Get(key)
 		result = string(val)
@@ -120,6 +138,23 @@ func Write(stringkey string, jsonData []byte) []byte {
 	value := jsonData
 	client.boltDB.Update(func(tx *bolt.Tx) error {
 		bucket, err := tx.CreateBucketIfNotExists(database)
+		if err != nil {
+			return err
+		}
+		bucket.Put(key, value)
+		if err != nil {
+			return err
+		}
+		return nil
+	})
+	return key
+}
+
+func WriteOHLC(stringkey string, jsonData []byte) []byte {
+	key := []byte(stringkey)
+	value := jsonData
+	client.boltDB.Update(func(tx *bolt.Tx) error {
+		bucket, err := tx.CreateBucketIfNotExists(ohlcDatabase)
 		if err != nil {
 			return err
 		}

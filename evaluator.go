@@ -2,14 +2,15 @@ package main
 
 import (
 	"bufio"
-	"encoding/csv"
+	// "encoding/csv"
 	"encoding/json"
 	// "fmt"
 	// "github.com/davecgh/go-spew/spew"
-	"io"
-	"log"
-	"os"
+	// "io"
+	// "log"
+	// "os"
 	"strconv"
+	"strings"
 )
 
 type Evaluated struct {
@@ -39,25 +40,48 @@ func (ev *Evaluated) ToCSV() {
 	dumpToFile(myLocation+"/evals/"+ev.Symbol+"_"+"eval.csv", filecontent)
 }
 
-func Check() {
+func Check(techCriteriaRsi float64, techCriteriaMfi float64, scoreCriteria int) []byte {
 
-	csvFile, _ := os.Open(myLocation + "/cleaned_stocks.csv")
-	reader := csv.NewReader(bufio.NewReader(csvFile))
+	// techCriteriaRsi := 5.0
+	// techCriteriaMfi := 0.05
+	// scoreCriteria := 5
+
+	data, err := Asset("cleaned_stocks.csv")
+	if err != nil {
+		// Asset was not found.
+	}
+
+	scanner := bufio.NewScanner(strings.NewReader(string(data)))
 
 	var companies []Company
-	for {
-		line, error := reader.Read()
-		if error == io.EOF {
-			break
-		} else if error != nil {
-			log.Fatal(error)
-		}
+
+	for scanner.Scan() {
+		line := strings.Split(scanner.Text(), ",")
+
 		companies = append(companies, Company{
-			Symbol:    line[0],
-			Sector:    line[1],
-			SubSector: line[2],
+			// fmt.Println(line)
+			Symbol:    string(line[0]),
+			Sector:    string(line[1]),
+			SubSector: string(line[2]),
 		})
 	}
+	// csvFile, _ := os.Open(myLocation + "/cleaned_stocks.csv")
+	// reader := csv.NewReader(bufio.NewReader(csvFile))
+
+	// var companies []Company
+	// for {
+	// 	line, error := reader.Read()
+	// 	if error == io.EOF {
+	// 		break
+	// 	} else if error != nil {
+	// 		log.Fatal(error)
+	// 	}
+	// 	companies = append(companies, Company{
+	// 		Symbol:    line[0],
+	// 		Sector:    line[1],
+	// 		SubSector: line[2],
+	// 	})
+	// }
 
 	var tape []Evaluated
 
@@ -90,13 +114,13 @@ func Check() {
 				false, false, false, false,
 			}
 
-			if techs.Rsi <= .005 {
-				score++
+			if techs.Rsi <= techCriteriaRsi {
+				// score++
 				evalut.RsiTrigger = true
 			}
 
-			if techs.Mfi <= .005 {
-				score++
+			if techs.Mfi <= techCriteriaMfi {
+				// score++
 				evalut.MfiTrigger = true
 			}
 
@@ -130,14 +154,14 @@ func Check() {
 				evalut.DebtToEquityTrigger = true
 			}
 
-			if score > 5 {
+			if score > scoreCriteria {
 				evalut.ToCSV()
 				// fmt.Println(comp.Symbol, score)
 				// fmt.Println(evalut)
-				// if evalut.RsiTrigger == true && evalut.MfiTrigger == true {
-				// if evalut.MfiTrigger == true {
-				// if evalut.RsiTrigger == true {
-				if true {
+				if evalut.RsiTrigger == true && evalut.MfiTrigger == true {
+					// if evalut.MfiTrigger == true {
+					// if evalut.RsiTrigger == true {
+					// if true {
 					// fmt.Println(techs)
 					tape = append(tape, evalut)
 				}
@@ -150,4 +174,5 @@ func Check() {
 	// fmt.Println(tape)
 	jsond, _ := json.Marshal(tape)
 	dumpToFile(myLocation+"/tape.json", string(jsond))
+	return jsond
 }
