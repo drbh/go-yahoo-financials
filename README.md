@@ -1,6 +1,6 @@
 # Welcome to go-yahoo-financials
 
-![Screenshot](gyf.png?raw=true "Application Screenshot")
+![Screenshot](ui.png?raw=true "Application Screenshot")
 
 ## What I do
 
