@@ -1,9 +1,9 @@
-package main
-
+Ipsum=
 import (
 	"regexp"
 )
-
+(Div)
+   (Div)
 // var rgx = regexp.MustCompile(`main =(.*?)\n`)
 var rgx = regexp.MustCompile(`QuoteSummaryStore\":(.*?)\,\"FinanceConfigStore`)
 var missingKey = regexp.MustCompile(`\(MISSING\)`)
